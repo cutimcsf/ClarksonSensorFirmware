@@ -32,6 +32,9 @@
 #include "sl_bluetooth.h"
 #include "app.h"
 
+#include "peripherals/adc.h"
+#include "clarkson_sensor.h"
+
 // The advertising set handle allocated from Bluetooth stack.
 static uint8_t advertising_set_handle = 0xff;
 
@@ -44,6 +47,7 @@ SL_WEAK void app_init(void)
   // Put your additional application init code here!                         //
   // This is called once during start-up.                                    //
   /////////////////////////////////////////////////////////////////////////////
+  ADC_initialize();
 }
 
 /**************************************************************************//**
@@ -115,9 +119,14 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
       app_assert_status(sc);
       break;
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Add additional event handlers here as your application requires!      //
-    ///////////////////////////////////////////////////////////////////////////
+
+    case sl_bt_evt_gatt_server_user_write_request_id:
+      handleUserWriteRequest(&evt->data.evt_gatt_server_user_write_request);
+      break;
+
+    case sl_bt_evt_gatt_server_user_read_request_id:
+      handleUserReadRequest(&evt->data.evt_gatt_server_user_read_request);
+      break;
 
     // -------------------------------
     // Default event handler.

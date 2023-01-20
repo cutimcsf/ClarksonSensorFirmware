@@ -37,6 +37,7 @@ component:
 - instance: [spi_accel, spi_dac]
   id: spidrv_usart
 - {id: bluetooth_feature_gatt}
+- {id: emlib_adc}
 - {id: emlib_i2c}
 - {id: bluetooth_feature_legacy_scanner}
 - {id: bt_post_build}

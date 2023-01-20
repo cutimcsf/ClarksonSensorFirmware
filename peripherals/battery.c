@@ -8,6 +8,7 @@
  */
 
 #include "adc.h"
+#include "battery.h"
 #include <sl_bt_api.h>
 
 #define R1				1000000
@@ -112,7 +113,7 @@ uint32_t Battery_updatePowerLevel(bool flush) {
 	uint64_t raw = 0;
 
   GPIO_PinModeSet(gpioPortC, 10, gpioModeInputPull, 0);
-  raw = readADC_Battery();
+  raw = ADC_readPowerMonitor();
   GPIO_PinModeSet(gpioPortC, 10, gpioModeDisabled, 0);
 
 	raw = (raw/10)*10;

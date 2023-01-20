@@ -34,12 +34,12 @@
 ADC_Init_TypeDef init;
 
 ADC_InitSingle_TypeDef initSingleBattery  =   {                                   \
-    adcPRSSELCh0,            /* PRS ch0 (if enabled). */                          \
+    0,                       /* PRS is not used - ignore this value */            \
     adcAcqTime256,           /* 256 ADC_CLK cycle acquisition time. */            \
     adcRef2V5,               /* 2.50 V internal reference. */                     \
-    ADC_SAMPLE_RESOLUTION,   /* 16 bit resolution. */                             \
-    ADC_BAT_POS_SEL,         /* Select node BUS0XCH0 as posSel */                 \
-    adcNegSelVSS,            /* Select VSS as negSel */                           \
+    adcResOVS,               /* Oversampling enabled resolution. */               \
+    ADC_BAT_POS_SEL,         /* BATT_PWR_MON_HIGH  */                             \
+    ADC_BAT_NEG_SEL,         /* BATT_PWR_MON_LOW   */                             \
     false,                   /* Single-ended input. */                            \
     false,                   /* PRS disabled. */                                  \
     false,                   /* Right adjust. */                                  \
@@ -48,7 +48,7 @@ ADC_InitSingle_TypeDef initSingleBattery  =   {                                 
     false                    /* Discard new data on full FIFO. */                 \
   };
 
-void initializeADC(void) {
+void ADC_initialize(void) {
 	// Enable ADC0 clock
 	CMU_ClockEnable(cmuClock_ADC0, true);
 	/* Reset ADC to be sure we have default settings and wait for ongoing */
@@ -59,11 +59,11 @@ void initializeADC(void) {
 	init.prescale = ADC_PrescaleCalc(ADC_CLOCK, 0);
 	init.ovsRateSel = adcOvsRateSel128;
 
-	resetADC();
+	ADC_reset();
 	ADC_Init(ADC0, &init);
 }
 
-void resetADC() {
+void ADC_reset() {
   ADC_Reset(ADC0);
 }
 
@@ -84,6 +84,6 @@ uint32_t readADC(const ADC_InitSingle_TypeDef *init) {
   return (uint32_t) raw;
 }
 
-uint32_t readADC_Battery( ) {
+uint32_t ADC_readPowerMonitor( ) {
   return readADC(&initSingleBattery);
 }
