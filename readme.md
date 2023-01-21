@@ -1,6 +1,12 @@
 # Clarkson Sensor Firmware
 
-Based on the Bluetooth SoC-Empty example project.
+Based on the Bluetooth SoC-Empty example project. To work with this project, be sure you have the following installed:
+
+1) Simplicity Studio v5 (https://www.silabs.com/developers/simplicity-studio)
+2) Gecko SDK 4.2.0
+3) GCC Toolchain 10.2.1
+
+Contact Tim (tfanelli@clarkson.edu) if you need help getting set up. 
 
 ## Getting Started
 
