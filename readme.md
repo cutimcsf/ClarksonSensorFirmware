@@ -8,6 +8,11 @@ Based on the Bluetooth SoC-Empty example project. To work with this project, be 
 
 Contact Tim (tfanelli@clarkson.edu) if you need help getting set up. 
 
+## Code Layout
+app.h/app.c and clarkson_sensor.h/clarkson_sensor.c contain all the logic for BLE interactions
+
+Code to interface with the ADC, DAC, LMP91000, read the battery voltage, and interact with the accelerometer are all in the peripherals/ subfolder (note, I haven't started the accelerometer code yet, but it's just an SPI interface same as the DAC and the SPI peripheral is already configured)
+
 ## Getting Started with Firmware Development for the EFR32 Microcontroller
 
 To learn the Bluetooth technology basics, see [UG103.14: Bluetooth LE Fundamentals](https://www.silabs.com/documents/public/user-guides/ug103-14-fundamentals-ble.pdf).
