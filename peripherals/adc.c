@@ -1,38 +1,25 @@
 /*
- * ADC.c
+ *  peripherals/adc.c
  *
- *  Created on: Jun 27, 2020
- *      Author: Timothy C. Fanelli
- *              Zero Byte LLC
- *              hello@zerobytellc.com
+ *  Created on: January 21, 2023
+ *      Author: Timothy C. Sweeney-Fanelli
+ *              Affects AI
+ *              tim@affects.ai
  *
  *  For ADC Reference, see publication AN0021:
  *     https://www.silabs.com/documents/public/application-notes/AN0021.pdf
  *
  *  As well as the EFR32xG1 Reference Manual:
  *     https://www.silabs.com/documents/public/reference-manuals/efr32xg1-rm.pdf
- *
- *  The ADC supports offset and gain calibration to correct errors due to process and
- *  temperature variations. This must be done individual- ly for each reference used.
- *  For each reference, it needs to be repeated for single-ended, negative single-ended
- *  (see 24.3.7 Input Se- lection for details) and differential measurement. The ADC
- *  calibration (ADCn_CAL) register contains register fields for calibrating offset and
- *  gain for both single and scan mode. The gain and offset calibration are done in
- *  single channel mode, but the resulting calibration values can be used for both single
- *  and scan mode.
- *
- *  Gain and offset for various references and modes are calibrated during production and
- *  the calibration values for these can be found in the Device Information page. During
- *  reset, the gain and offset calibration registers are loaded with the production calibration
- *  values for the 1V25 reference. Others can be loaded as needed or the user can perform
- *  calibration on the fly using the particular reference and mode to be used and write the
- *  result in the ADCn_CAL before starting the ADC conversion with them.
  */
 
 #include "adc.h"
+#include <em_cmu.h>
 
-ADC_Init_TypeDef init;
-
+/*
+ * ADC Initialization structure -- 256 cycle oversample w/ 2.5V reference, reading
+ * differential across the ADC_BAT_POS_SEL and ADC_BAT_NEG_SEL pins.
+ */
 ADC_InitSingle_TypeDef initSingleBattery  =   {                                   \
     0,                       /* PRS is not used - ignore this value */            \
     adcAcqTime256,           /* 256 ADC_CLK cycle acquisition time. */            \
@@ -51,9 +38,8 @@ ADC_InitSingle_TypeDef initSingleBattery  =   {                                 
 void ADC_initialize(void) {
 	// Enable ADC0 clock
 	CMU_ClockEnable(cmuClock_ADC0, true);
-	/* Reset ADC to be sure we have default settings and wait for ongoing */
-	/* conversions to be complete. */
 
+	// Initialized the ADC
 	ADC_Init_TypeDef init = ADC_INIT_DEFAULT;
 	init.timebase = ADC_TimebaseCalc(0);
 	init.prescale = ADC_PrescaleCalc(ADC_CLOCK, 0);
@@ -67,23 +53,22 @@ void ADC_reset() {
   ADC_Reset(ADC0);
 }
 
-uint32_t readADC(const ADC_InitSingle_TypeDef *init) {
+int32_t ADC_read(const ADC_InitSingle_TypeDef *init) {
   int32_t raw;
 
+  // Initialize and begin an ADC single-sample conversion
   ADC_InitSingle(ADC0, init);
   ADC_Start(ADC0, adcStartSingle);
 
+  // Wait for the read to complete
   while (!(ADC0->STATUS & _ADC_STATUS_SINGLEDV_MASK))
     ;
 
+  // Get the ADC result
   raw = ADC_DataSingleGet(ADC0);
-
-  if ( raw < 0 )
-    raw = 0;
-
-  return (uint32_t) raw;
+  return raw;
 }
 
-uint32_t ADC_readPowerMonitor( ) {
-  return readADC(&initSingleBattery);
+int32_t ADC_readPowerMonitor( ) {
+  return ADC_read(&initSingleBattery);
 }

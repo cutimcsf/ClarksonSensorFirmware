@@ -1,3 +1,14 @@
+/*
+ *  peripherals/i2c/i2c_lmp_config.c
+ *
+ *  Created on: January 21, 2023
+ *      Author: Timothy C. Sweeney-Fanelli
+ *              Affects AI
+ *              tim@affects.ai
+ *
+ *  I2C Initialization Structures for the two LMP91000 chips.
+ */
+
 #include "i2c_lmp_config.h"
 
 sl_i2cspm_t *i2c_lmp1 = I2C_LMP1_PERIPHERAL;

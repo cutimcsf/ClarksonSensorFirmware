@@ -1,15 +1,22 @@
 /*
- * afe.h
+ *  peripherals/lmp91000.c
  *
- *  Created on: Jan 20, 2023
- *      Author: Tim Sweeney-Fanelli
- */
+ *  Created on: January 21, 2023
+ *      Author: Timothy C. Sweeney-Fanelli
+ *              Affects AI
+ *              tim@affects.ai
+ *
+ *  Methods for interacting with the LMP91000 chips.
+ ******************************************************************************/
 
-#ifndef AFE_H
-#define AFE_H
+#ifndef LMP91000_H__
+#define LMP91000_H__
 
-#include <peripherals/i2c/i2c_lmp_config.h>
+#include "i2c/i2c_lmp_config.h"
 
+/******************************************************************************
+ * Selector values to choose between the LMP1 and LMP2 chips on the PCB.
+ *****************************************************************************/
 typedef enum {
   LMP91000_1 = 1,
   LMP91000_2

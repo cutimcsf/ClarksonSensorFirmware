@@ -1,8 +1,6 @@
-# SoC - Empty
+# Clarkson Sensor Firmware
 
-The Bluetooth SoC-Empty example is a project that you can use as a template for any standalone Bluetooth application.
-
-> Note: this example expects a specific Gecko Bootloader to be present on your device. For details see the Troubleshooting section.
+Based on the Bluetooth SoC-Empty example project.
 
 ## Getting Started
 
@@ -88,13 +86,6 @@ Note that Example Projects do not include a bootloader. However, Bluetooth-based
 - On Series 2 devices SoC example projects require a *Bluetooth Apploader OTA DFU* type bootloader by default. This bootloader needs a lot of flash space and does not fit into the regular bootloader area, hence the application start address must be shifted. This shift is automatically done by the *Apploader Support for Applications* software component, which is installed by default. If you want to use any other bootloader type, you should remove this software component in order to shift the application start address back to the end of the regular bootloader area. Note, that in this case you cannot do OTA DFU with Apploader, but you can still implement application-level OTA DFU by installing the *Application OTA DFU* software component instead of *In-place OTA DFU*.
 
 For more information on bootloaders, see [UG103.6: Bootloader Fundamentals](https://www.silabs.com/documents/public/user-guides/ug103-06-fundamentals-bootloading.pdf) and [UG489: Silicon Labs Gecko Bootloader User's Guide for GSDK 4.0 and Higher](https://cn.silabs.com/documents/public/user-guides/ug489-gecko-bootloader-user-guide-gsdk-4.pdf).
-
-
-### Programming the Radio Board
-
-Before programming the radio board mounted on the mainboard, make sure the power supply switch is in the AEM position (right side) as shown below.
-
-![Radio board power supply switch](image/readme_img0.png)
 
 
 ## Resources

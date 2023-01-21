@@ -1,16 +1,21 @@
 /*
- * clarkson_sensor.c
+ *  clarkson_sensor.c
  *
- *  Created on: Jan 20, 2023
- *      Author: tim
+ *  Created on: January 21, 2023
+ *      Author: Timothy C. Sweeney-Fanelli
+ *              Affects AI
+ *              tim@affects.ai
+ *
+ *  Utility methods for interfacing with the sensor via BLE.
  */
+
 
 #include "clarkson_sensor.h"
 #include "peripherals/dac.h"
 #include "peripherals/battery.h"
-
-#include "sl_bluetooth.h"
 #include "gatt_db.h"
+
+#include <sl_bluetooth.h>
 
 static uint16_t
 parseValue (const uint8_t len, const uint8_t bytes[])
@@ -32,6 +37,11 @@ handleUserWriteRequest (const sl_bt_evt_gatt_server_user_write_request_t * const
     case gattdb_write_to_dac:
       DAC_writeValue (parseValue (request->value.len, request->value.data));
       break;
+
+    default:
+      // Take no action, just let it pass through. There are system-level handlers
+      // that the API will call next.
+      break;
     }
 }
 
@@ -48,16 +58,20 @@ handleUserReadRequest (const sl_bt_evt_gatt_server_user_read_request_t * const r
   switch (rsp->characteristic)
     {
     case gattdb_battery_level:
-      Battery_updatePowerLevel(0);
+      Battery_readAndFlushCurrentPowerLevel(0);
       millivolts = Battery_getCurrentLevel ();
       sz = sizeof(millivolts);
       p = (uint8_t*) &millivolts;
       break;
 
     default:
+      // Take no action, just let it pass through. There are system-level handlers
+      // that the API will call next.
       handled = false;
+      break;
     }
 
+  // If we handled it, then send the read response back to the caller.
   if (handled)
     {
       uint16_t status = 0;

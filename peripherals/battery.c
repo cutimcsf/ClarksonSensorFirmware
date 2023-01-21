@@ -1,25 +1,29 @@
 /*
- * Battery.c
+ *  peripherals/battery.c
  *
- *  Created on: Jun 27, 2020
- *      Author: Timothy C. Fanelli
- *              Zero Byte LLC
- *              hello@zerobytellc.com
- */
+ *  Created on: January 21, 2023
+ *      Author: Timothy C. Sweeney-Fanelli
+ *              Affects AI
+ *              tim@affects.ai
+ *
+ *  Methods for obtaining battery level and related info.
+ ******************************************************************************/
 
 #include "adc.h"
 #include "battery.h"
 #include <sl_bt_api.h>
+#include <em_cmu.h>
+
 
 #define R1				1000000
 #define R2				1000000
 #define RFACTOR			((R1+R2)/R2)
 #define RAW_OFFSET		(ADC_SAMPLE_MAXVAL*10/FULL_MILLIS)
 
-#define FULL_MILLIS		(3350)
+const uint32_t FULL_MILLIS = 3350;
+const uint32_t HIGH = 4200;   // 100%
+const uint32_t LOW  = 3000;   // 0%
 
-
-#define HISTORY_LEN 5
 static uint32_t history[HISTORY_LEN];
 static uint8_t  historyIndex = 0;
 
@@ -102,25 +106,41 @@ int Battery_getTrendSlope() {
   return m;
 }
 
-const uint32_t HIGH = 4200;   // 100%
-const uint32_t LOW  = 3000;   // 0%
 
-uint32_t Battery_updatePowerLevel(bool flush) {
+
+uint32_t Battery_readCurrentMillis() {
   uint32_t millivolts;
-  uint32_t percentOfSpan;
-  int32_t  powerLevel;
-  double distanceToZero;
-	uint64_t raw = 0;
+  int32_t raw = 0;
 
+  /*
+   * Pull BATT_POWER_MON_LOW to ground to complete the voltage divider before
+   * reading the ADC, but float it again after. Tying it to ground makes a
+   * current sink so we'd just be wasting battery to leave it that way.
+   */
   GPIO_PinModeSet(gpioPortC, 10, gpioModeInputPull, 0);
   raw = ADC_readPowerMonitor();
   GPIO_PinModeSet(gpioPortC, 10, gpioModeDisabled, 0);
 
-	raw = (raw/10)*10;
+  // Battery's millivolts can never be less than 0, but noise does funny things.
+  if ( raw < 0 )
+    raw = 0;
 
-	millivolts = raw * FULL_MILLIS / 0x10000;
+  // Probably unnecessary but let's smooth out some noise here too.
+  raw = (raw/10)*10;
+
+  // Convert the reading from a raw value to millivolts.
+  millivolts = raw * FULL_MILLIS / 0x10000;
   millivolts *= 2;
 
+  return millivolts;
+}
+
+uint32_t Battery_readCurrentPowerLevel() {
+  double distanceToZero;
+  int32_t  powerLevel;
+  uint32_t percentOfSpan;
+
+  uint32_t millivolts = Battery_readCurrentMillis();
   if ( millivolts > HIGH ) {
     millivolts = HIGH;
   }
@@ -131,12 +151,14 @@ uint32_t Battery_updatePowerLevel(bool flush) {
   distanceToZero = (millivolts-LOW);
   percentOfSpan = 100*(distanceToZero/(HIGH-LOW)) - 1;
   powerLevel = percentOfSpan + 5 - percentOfSpan % 5;
+  addToHistory(powerLevel);
 
-  if ( flush )
-    flushHistory(powerLevel);
-  else
-    addToHistory(powerLevel);
+  return powerLevel;
+}
 
-  return Battery_getCurrentLevel();
+uint32_t Battery_readAndFlushCurrentPowerLevel() {
+  uint32_t powerLevel = Battery_readCurrentPowerLevel();
+  flushHistory(powerLevel);
+  return powerLevel;
 }
 

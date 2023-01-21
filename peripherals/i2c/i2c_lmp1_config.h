@@ -1,22 +1,18 @@
-/***************************************************************************//**
- * @file
- * @brief I2CSPM Config
- *******************************************************************************
- * # License
- * <b>Copyright 2019 Silicon Laboratories Inc. www.silabs.com</b>
- *******************************************************************************
+/*
+ *  peripherals/i2c/i2c_lmp1_config.h
  *
- * The licensor of this software is Silicon Laboratories Inc. Your use of this
- * software is governed by the terms of Silicon Labs Master Software License
- * Agreement (MSLA) available at
- * www.silabs.com/about-us/legal/master-software-license-agreement. This
- * software is distributed to you in Source Code format and is governed by the
- * sections of the MSLA applicable to Source Code.
+ *  Created on: January 21, 2023
+ *      Author: Timothy C. Sweeney-Fanelli
+ *              Affects AI
+ *              tim@affects.ai
  *
- ******************************************************************************/
+ *  Pin and ABUS parameters for LMP91000_1.
+ */
 
 #ifndef I2C_LMP1_CONFIG_H
 #define I2C_LMP1_CONFIG_H
+
+#include <em_gpio.h>
 
 // <o I2C_LMP1_REFERENCE_CLOCK> Reference clock frequency
 // <i> Frequency in Hz of the reference clock.

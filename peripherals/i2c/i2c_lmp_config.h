@@ -1,8 +1,12 @@
 /*
- * lmp_config.h
+ *  peripherals/i2c/i2c_lmp_config.h
  *
- *  Created on: Jan 20, 2023
- *      Author: tim
+ *  Created on: January 21, 2023
+ *      Author: Timothy C. Sweeney-Fanelli
+ *              Affects AI
+ *              tim@affects.ai
+ *
+ *  I2C Initialization values for the two LMP91000 chips.
  */
 
 #ifndef LMP_CONFIG_H_
@@ -11,7 +15,7 @@
 #include "i2c_lmp1_config.h"
 #include "i2c_lmp2_config.h"
 #include "sl_i2cspm.h"
-#include "em_cmu.h"
+#include <em_cmu.h>
 
 
 #if I2C_LMP1_SPEED_MODE == 0
