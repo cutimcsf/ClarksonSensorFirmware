@@ -33,14 +33,18 @@ uint8_t i2c_rxBuffer[I2C_RXBUFFER_SIZE];
 uint8_t i2c_rxBufferIndex;
 
 void LMP91000_enableSensor(const LMP91000_Selector sel) {
-  I2CSPM_Init_TypeDef *lmp_init;
+  LMP91000_Config *enableConfig;
+  LMP91000_Config *disableConfig;
+
   switch( sel ) {
     case LMP91000_1:
-      lmp_init = &init_lmp1;
+      enableConfig = &lmp91000_1;
+      disableConfig = &lmp91000_2;
       break;
 
     case LMP91000_2:
-      lmp_init = &init_lmp2;
+      enableConfig = &lmp91000_2;
+      disableConfig = &lmp91000_1;
       break;
 
     default:
@@ -49,7 +53,16 @@ void LMP91000_enableSensor(const LMP91000_Selector sel) {
   }
 
   CMU_ClockEnable(cmuClock_GPIO, true);
-  I2CSPM_Init(lmp_init);
+
+  // This wouldn't be needed if I put them on the same i2c bus but I wasn't
+  // paying attention ;).
+  I2CSPM_Init(enableConfig->i2c_init);
+
+  // Pull the ENLOW pin down on the active LMP91000
+  GPIO_PinModeSet(enableConfig->enlow_port, enableConfig->enlow_pin, gpioModeInputPull, 0);
+
+  // Pull the ENLOW pin up on the inactive LMP91000
+  GPIO_PinModeSet(disableConfig->enlow_port, disableConfig->enlow_pin, gpioModeInputPull, 1);
 }
 
 /**
@@ -72,7 +85,7 @@ void LMP91000_sendData(const uint8_t registerAddy, const uint8_t data) {
 
   // Initializing I2C transfer
   i2cTransfer.addr          = LMP91000_I2C_ADDRESS;
-  i2cTransfer.flags         = I2C_FLAG_WRITE;
+  i2cTransfer.flags          = I2C_FLAG_WRITE;
   i2cTransfer.buf[0].data   = i2c_txBuffer;
   i2cTransfer.buf[0].len    = 2;
   i2cTransfer.buf[1].data   = i2c_rxBuffer;

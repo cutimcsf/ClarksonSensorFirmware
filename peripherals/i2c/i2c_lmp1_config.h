@@ -14,6 +14,11 @@
 
 #include <em_gpio.h>
 
+#define LMP91000_1_ENLOW_PORT       gpioPortB
+#define LMP91000_1_ENLOW_PIN        13
+#define LMP91000_1_TEMPERATURE_PORT gpioPortA
+#define LMP91000_1_TEMPERATURE_PIN  5
+
 // <o I2C_LMP1_REFERENCE_CLOCK> Reference clock frequency
 // <i> Frequency in Hz of the reference clock.
 // <i> Select 0 to use the frequency of the currently selected clock.

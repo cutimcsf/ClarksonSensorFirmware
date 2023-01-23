@@ -39,3 +39,21 @@ I2CSPM_Init_TypeDef init_lmp2 = {
   .i2cMaxFreq = I2C_LMP2_MAX_FREQ,
   .i2cClhr = I2C_LMP2_HLR
 };
+
+LMP91000_Config lmp91000_1 = {
+    .i2c_lmp = I2C_LMP1_PERIPHERAL,
+    .i2c_init = &init_lmp1,
+    .enlow_port = LMP91000_1_ENLOW_PORT,
+    .enlow_pin = LMP91000_1_ENLOW_PIN,
+    .temperature_port = LMP91000_1_TEMPERATURE_PORT,
+    .temperature_pin = LMP91000_1_TEMPERATURE_PIN,
+};
+
+LMP91000_Config lmp91000_2 = {
+    .i2c_lmp = I2C_LMP2_PERIPHERAL,
+    .i2c_init = &init_lmp2,
+    .enlow_port = LMP91000_2_ENLOW_PORT,
+    .enlow_pin = LMP91000_2_ENLOW_PIN,
+    .temperature_port = LMP91000_2_TEMPERATURE_PORT,
+    .temperature_pin = LMP91000_2_TEMPERATURE_PIN,
+};

@@ -40,9 +40,20 @@
 #define I2C_LMP2_MAX_FREQ I2C_FREQ_FASTPLUS_MAX
 #endif
 
-extern sl_i2cspm_t *i2c_lmp1;
-extern sl_i2cspm_t *i2c_lmp2;
-extern I2CSPM_Init_TypeDef init_lmp1;
-extern I2CSPM_Init_TypeDef init_lmp2;
+typedef struct {
+  sl_i2cspm_t          *i2c_lmp;
+  I2CSPM_Init_TypeDef  *i2c_init;
+  uint8_t               enlow_port;
+  uint8_t               enlow_pin;
+  uint8_t               temperature_port;
+  uint8_t               temperature_pin;
+} LMP91000_Config;
+
+//extern sl_i2cspm_t *i2c_lmp1;
+//extern sl_i2cspm_t *i2c_lmp2;
+//extern I2CSPM_Init_TypeDef init_lmp1;
+//extern I2CSPM_Init_TypeDef init_lmp2;
+extern LMP91000_Config lmp91000_1;
+extern LMP91000_Config lmp91000_2;
 
 #endif /* LMP_CONFIG_H_ */
