@@ -40,7 +40,7 @@ I2CSPM_Init_TypeDef init_lmp2 = {
   .i2cClhr = I2C_LMP2_HLR
 };
 
-LMP91000_Config lmp91000_1 = {
+LMP91000_Config lmp91000_config_1 = {
     .i2c_lmp = I2C_LMP1_PERIPHERAL,
     .i2c_init = &init_lmp1,
     .enlow_port = LMP91000_1_ENLOW_PORT,
@@ -49,7 +49,7 @@ LMP91000_Config lmp91000_1 = {
     .temperature_pin = LMP91000_1_TEMPERATURE_PIN,
 };
 
-LMP91000_Config lmp91000_2 = {
+LMP91000_Config lmp91000_config_2 = {
     .i2c_lmp = I2C_LMP2_PERIPHERAL,
     .i2c_init = &init_lmp2,
     .enlow_port = LMP91000_2_ENLOW_PORT,

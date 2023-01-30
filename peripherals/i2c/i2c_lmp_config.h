@@ -49,11 +49,7 @@ typedef struct {
   uint8_t               temperature_pin;
 } LMP91000_Config;
 
-//extern sl_i2cspm_t *i2c_lmp1;
-//extern sl_i2cspm_t *i2c_lmp2;
-//extern I2CSPM_Init_TypeDef init_lmp1;
-//extern I2CSPM_Init_TypeDef init_lmp2;
-extern LMP91000_Config lmp91000_1;
-extern LMP91000_Config lmp91000_2;
+extern LMP91000_Config lmp91000_config_1;
+extern LMP91000_Config lmp91000_config_2;
 
 #endif /* LMP_CONFIG_H_ */

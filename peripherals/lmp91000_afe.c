@@ -14,6 +14,7 @@
 
 #include "lmp91000_afe.h"
 #include <app_assert.h>
+#include <em_i2c.h>
 
 // The LMP91000's I2C Address and internal register addresses as defined
 //  by the datasheet -- section 7.5.1 and 7.5.3
@@ -38,13 +39,13 @@ void LMP91000_enableSensor(const LMP91000_Selector sel) {
 
   switch( sel ) {
     case LMP91000_1:
-      enableConfig = &lmp91000_1;
-      disableConfig = &lmp91000_2;
+      enableConfig = &lmp91000_config_1;
+      disableConfig = &lmp91000_config_2;
       break;
 
     case LMP91000_2:
-      enableConfig = &lmp91000_2;
-      disableConfig = &lmp91000_1;
+      enableConfig = &lmp91000_config_2;
+      disableConfig = &lmp91000_config_1;
       break;
 
     default:
@@ -54,15 +55,15 @@ void LMP91000_enableSensor(const LMP91000_Selector sel) {
 
   CMU_ClockEnable(cmuClock_GPIO, true);
 
+
+  // Pull the ENLOW pin down on the active LMP91000
+  GPIO_PinModeSet(enableConfig->enlow_port, enableConfig->enlow_pin, gpioModeInputPull, 1);
+  GPIO_PinModeSet(disableConfig->enlow_port, disableConfig->enlow_pin, gpioModeDisabled, 0);
+
   // This wouldn't be needed if I put them on the same i2c bus but I wasn't
   // paying attention ;).
   I2CSPM_Init(enableConfig->i2c_init);
 
-  // Pull the ENLOW pin down on the active LMP91000
-  GPIO_PinModeSet(enableConfig->enlow_port, enableConfig->enlow_pin, gpioModeInputPull, 0);
-
-  // Pull the ENLOW pin up on the inactive LMP91000
-  GPIO_PinModeSet(disableConfig->enlow_port, disableConfig->enlow_pin, gpioModeInputPull, 1);
 }
 
 /**
@@ -156,4 +157,51 @@ uint8_t LMP91000_readData(const uint8_t registerAddy) {
   }
 
   return i2c_rxBuffer[0];
+}
+
+void LMP91000_setOpMode(uint8_t shortEnabled, uint8_t opMode) {
+  uint8_t data = GET_OPMODE_VALUE(shortEnabled, opMode);
+  LMP91000_sendData(LMP91000_MODECN_REG_ADDY, data);
+}
+
+void LMP91000_getOpMode(uint8_t *feShortEnabled, uint8_t *opMode) {
+  uint8_t data = LMP91000_readData(LMP91000_MODECN_REG_ADDY);
+  *feShortEnabled = GET_OPMODE_SHORT_EN(data);
+  *opMode = GET_OPMODE_MODE(data);
+}
+
+void LMP91000_setRefCN(uint8_t source, uint8_t intz, uint8_t sign, uint8_t bias) {
+  uint8_t data = GET_REFCN_REG_VALUE(source, intz, sign, bias);
+  LMP91000_sendData(LMP91000_REFCN_REG_ADDY, data);
+}
+
+void LMP91000_getRefCN(uint8_t *source, uint8_t *intz, uint8_t *sign, uint8_t *bias) {
+  uint8_t data = LMP91000_readData(LMP91000_REFCN_REG_ADDY);
+  *source = GET_REFCN_SOURCE(data);
+  *intz = GET_REFCN_INT_Z(data);
+  *sign = GET_REFCN_BIAS_SIGN(data);
+  *bias = GET_REFCN_BIAS_MAGNITUDE(data);
+}
+
+void LMP91000_setTIACN(uint8_t gain, uint8_t rload) {
+  uint8_t data = GET_TIA_REG_VALUE(gain,rload);
+  LMP91000_sendData(LMP91000_TIACN_REG_ADDY, data);
+}
+
+void LMP91000_getTIACN(uint8_t *gain, uint8_t *rload) {
+  uint8_t data = LMP91000_readData(LMP91000_TIACN_REG_ADDY);
+  *gain = GET_TIA_GAIN(data);
+  *rload = GET_TIA_RLOAD(data);
+}
+
+void LMP91000_setLock(uint8_t value) {
+  LMP91000_sendData(LMP91000_LOCK_REG_ADDY, value);
+}
+
+void LMP91000_getLock(uint8_t *value) {
+  *value = LMP91000_readData(LMP91000_LOCK_REG_ADDY);
+}
+
+void LMP91000_getStatus(uint8_t *value) {
+  *value = LMP91000_readData(LMP91000_STATUS_REG_ADDY);
 }
