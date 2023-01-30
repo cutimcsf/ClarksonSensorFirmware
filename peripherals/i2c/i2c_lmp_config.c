@@ -10,6 +10,7 @@
  */
 
 #include "i2c_lmp_config.h"
+#include "../adc.h"
 
 sl_i2cspm_t *i2c_lmp1 = I2C_LMP1_PERIPHERAL;
 sl_i2cspm_t *i2c_lmp2 = I2C_LMP2_PERIPHERAL;
@@ -47,6 +48,7 @@ LMP91000_Config lmp91000_config_1 = {
     .enlow_pin = LMP91000_1_ENLOW_PIN,
     .temperature_port = LMP91000_1_TEMPERATURE_PORT,
     .temperature_pin = LMP91000_1_TEMPERATURE_PIN,
+    .adcDataPin = LMP91000_1_DATA_PIN,
 };
 
 LMP91000_Config lmp91000_config_2 = {
@@ -56,4 +58,5 @@ LMP91000_Config lmp91000_config_2 = {
     .enlow_pin = LMP91000_2_ENLOW_PIN,
     .temperature_port = LMP91000_2_TEMPERATURE_PORT,
     .temperature_pin = LMP91000_2_TEMPERATURE_PIN,
+    .adcDataPin = LMP91000_2_DATA_PIN,
 };

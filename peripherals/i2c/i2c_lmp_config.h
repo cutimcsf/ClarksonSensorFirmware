@@ -47,6 +47,7 @@ typedef struct {
   uint8_t               enlow_pin;
   uint8_t               temperature_port;
   uint8_t               temperature_pin;
+  uint32_t              adcDataPin;
 } LMP91000_Config;
 
 extern LMP91000_Config lmp91000_config_1;

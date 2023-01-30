@@ -36,7 +36,7 @@
 #define OP_MODE_TEMP_MEAS_ON                  0b111u
 #define OP_MODE_TEMP_MEAS_OFF                 0b110u
 
-#define GET_OPMODE_VALUE(short_en, mode)      (short_en<<7 & mode)
+#define GET_OPMODE_VALUE(short_en, mode)      ((short_en<<7) | mode)
 #define GET_OPMODE_MODE(value)                (value&0b111)
 #define GET_OPMODE_SHORT_EN(value)            ((value&0b1000000) >> 7)
 
@@ -60,7 +60,7 @@
 #define TIA_RLOAD_100  0b11u
 #define TIA_RLOAD_MASK 0b00000011u
 
-#define GET_TIA_REG_VALUE(gain,rload)   (gain<<2&rload)
+#define GET_TIA_REG_VALUE(gain,rload)   ((gain<<2) | rload)
 #define GET_TIA_RLOAD(value)            (value&TIA_RLOAD_MASK)
 #define GET_TIA_GAIN(value)             ((value&TIA_GAIN_MASK)>>2)
 
@@ -100,7 +100,7 @@
 #define REFCN_BIAS_MAGNITUDE_MASK    0b00001111u
 #define REFCN_BIAS_MAGNITUDE_SHIFT   0x0u
 
-#define GET_REFCN_REG_VALUE(source,int_z,bias_sign,bias) (source<<REFCN_REF_SOURCE_SHIFT & int_z<<REFCN_INT_Z_SHIFT & bias_sign<<REFCN_BIAS_SIGN_SHIFT & bias)
+#define GET_REFCN_REG_VALUE(source,int_z,bias_sign,bias) ((source<<REFCN_REF_SOURCE_SHIFT) | (int_z<<REFCN_INT_Z_SHIFT) | (bias_sign<<REFCN_BIAS_SIGN_SHIFT) | bias)
 #define GET_REFCN_SOURCE(value)                          ((value&REFCN_REF_SOURCE_MASK)>>REFCN_REF_SOURCE_SHIFT)
 #define GET_REFCN_INT_Z(value)                           ((value&REFCN_INT_Z_MASK)>>REFCN_INT_Z_SHIFT)
 #define GET_REFCN_BIAS_SIGN(value)                       ((value&REFCN_BIAS_SIGN_MASK)>>REFCN_BIAS_SIGN_SHIFT)
@@ -139,7 +139,7 @@ void LMP91000_getLock(uint8_t *value);
 
 void LMP91000_getStatus(uint8_t *value);
 
-
+uint32_t LMP91000_getValue();
 
 #endif
 

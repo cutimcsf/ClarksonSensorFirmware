@@ -13,12 +13,15 @@
  ******************************************************************************/
 
 #include "lmp91000_afe.h"
+#include "adc.h"
+
 #include <app_assert.h>
 #include <em_i2c.h>
 
+
 // The LMP91000's I2C Address and internal register addresses as defined
 //  by the datasheet -- section 7.5.1 and 7.5.3
-#define LMP91000_I2C_ADDRESS                   0b1001000
+#define LMP91000_I2C_ADDRESS                   0b10010000
 #define LMP91000_STATUS_REG_ADDY               0x00
 #define LMP91000_LOCK_REG_ADDY                 0x01
 #define LMP91000_TIACN_REG_ADDY                0x10
@@ -28,23 +31,24 @@
 #define I2C_RXBUFFER_SIZE                 1
 #define I2C_TXBUFFER_SIZE                 2
 
+LMP91000_Config *activeConfig;
+
 // Buffers++
 uint8_t i2c_txBuffer[I2C_TXBUFFER_SIZE];
 uint8_t i2c_rxBuffer[I2C_RXBUFFER_SIZE];
 uint8_t i2c_rxBufferIndex;
 
 void LMP91000_enableSensor(const LMP91000_Selector sel) {
-  LMP91000_Config *enableConfig;
   LMP91000_Config *disableConfig;
 
   switch( sel ) {
     case LMP91000_1:
-      enableConfig = &lmp91000_config_1;
+      activeConfig = &lmp91000_config_1;
       disableConfig = &lmp91000_config_2;
       break;
 
     case LMP91000_2:
-      enableConfig = &lmp91000_config_2;
+      activeConfig = &lmp91000_config_2;
       disableConfig = &lmp91000_config_1;
       break;
 
@@ -56,13 +60,12 @@ void LMP91000_enableSensor(const LMP91000_Selector sel) {
   CMU_ClockEnable(cmuClock_GPIO, true);
 
 
-  // Pull the ENLOW pin down on the active LMP91000
-  GPIO_PinModeSet(enableConfig->enlow_port, enableConfig->enlow_pin, gpioModeInputPull, 1);
-  GPIO_PinModeSet(disableConfig->enlow_port, disableConfig->enlow_pin, gpioModeDisabled, 0);
+  GPIO_PinModeSet(activeConfig->enlow_port, activeConfig->enlow_pin, gpioModeInputPull, 0);
+  GPIO_PinModeSet(disableConfig->enlow_port, disableConfig->enlow_pin, gpioModeInputPull, 0);
 
   // This wouldn't be needed if I put them on the same i2c bus but I wasn't
   // paying attention ;).
-  I2CSPM_Init(enableConfig->i2c_init);
+  I2CSPM_Init(activeConfig->i2c_init);
 
 }
 
@@ -91,14 +94,7 @@ void LMP91000_sendData(const uint8_t registerAddy, const uint8_t data) {
   i2cTransfer.buf[0].len    = 2;
   i2cTransfer.buf[1].data   = i2c_rxBuffer;
   i2cTransfer.buf[1].len    = I2C_RXBUFFER_SIZE;
-  result = I2C_TransferInit(I2C0, &i2cTransfer);
-
-  // Sending data
-  while (result == i2cTransferInProgress)
-  {
-    result = I2C_Transfer(I2C0);
-  }
-
+  result = I2CSPM_Transfer(activeConfig->i2c_init->port, &i2cTransfer);
   app_assert(result == i2cTransferDone);
 }
 
@@ -131,31 +127,14 @@ uint8_t LMP91000_readData(const uint8_t registerAddy) {
 
   // Initializing I2C transfer -- write the register address we want to read
   i2cTransfer.addr          = LMP91000_I2C_ADDRESS;
-  i2cTransfer.flags         = I2C_FLAG_WRITE;
+  i2cTransfer.flags         = I2C_FLAG_WRITE_READ;
   i2cTransfer.buf[0].data   = i2c_txBuffer;
   i2cTransfer.buf[0].len    = 1;
   i2cTransfer.buf[1].data   = i2c_rxBuffer;
   i2cTransfer.buf[1].len    = I2C_RXBUFFER_SIZE;
-  result = I2C_TransferInit(I2C0, &i2cTransfer);
 
-  // Sending data
-  while (result == i2cTransferInProgress)
-  {
-    result = I2C_Transfer(I2C0);
-  }
-
+  result = I2CSPM_Transfer(activeConfig->i2c_init->port, &i2cTransfer);
   app_assert(result == i2cTransferDone);
-
-  i2cTransfer.flags         = I2C_FLAG_READ;
-  i2cTransfer.buf[0].len    = 0;
-  result = I2C_TransferInit(I2C0, &i2cTransfer);
-
-  // Sending data
-  while (result == i2cTransferInProgress)
-  {
-    result = I2C_Transfer(I2C0);
-  }
-
   return i2c_rxBuffer[0];
 }
 
@@ -204,4 +183,8 @@ void LMP91000_getLock(uint8_t *value) {
 
 void LMP91000_getStatus(uint8_t *value) {
   *value = LMP91000_readData(LMP91000_STATUS_REG_ADDY);
+}
+
+uint32_t LMP91000_getValue() {
+  return ADC_readPin(activeConfig->adcDataPin);
 }
