@@ -116,30 +116,110 @@ typedef enum {
 } LMP91000_Selector;
 
 /******************************************************************************
- * Both LMP91000 sensors are on the same ABUS, but different pins, so we
- * actually have to re-initialize the i2c driver to switch sensors. This was
- * a design error that will be corrected if we make more PCBs.
- *
  * Call this method passing in either LMP91000_1 or LMP91000_2 to set the
  * active sensor.
  *****************************************************************************/
 void LMP91000_enableSensor(const LMP91000_Selector sel);
 
-void LMP91000_setOpMode(uint8_t fetuint8_tEnabled, uint8_t opMode);
-void LMP91000_getOpMode(uint8_t *fetuint8_tEnabled, uint8_t *opMode);
+/**
+ * Sets the Mode Control Register (MODECN) on the active sensor
+ *
+ * @param fetShortEnabled
+ * @param opMode
+ */
+void LMP91000_setOpMode(uint8_t fetShortEnabled, uint8_t opMode);
 
+/**
+ * Gets the current value of the Mode Control Register (MODECN) from the
+ * active sensor
+ *
+ * @param fetShortEnabled
+ * @param opMode
+ */
+void LMP91000_getOpMode(uint8_t *fetShortEnabled, uint8_t *opMode);
+
+/**
+ * Sets the current value of the Reference Control Register (REFCN) on the
+ * active sensor.
+ *
+ * @param source
+ * @param intz
+ * @param sign
+ * @param bias
+ */
 void LMP91000_setRefCN(uint8_t source, uint8_t intz, uint8_t sign, uint8_t bias);
+
+/**
+ * Gets the current value of the Reference Control Register (REFCN) from the
+ * active sensor
+ *
+ * @param source
+ * @param intz
+ * @param sign
+ * @param bias
+ */
 void LMP91000_getRefCN(uint8_t *source, uint8_t *intz, uint8_t *sign, uint8_t *bias);
 
+/**
+ * Sets the current value of the TIA Control Register (TIACN) on the
+ * active sensor.
+ *
+ * @param gain
+ * @param rload
+ */
 void LMP91000_setTIACN(uint8_t gain, uint8_t rload);
+
+/**
+ * Gets the current value of the TIA Control Register (TIACN) from the
+ * active sensor
+ *
+ * @param gain
+ * @param rload
+ */
 void LMP91000_getTIACN(uint8_t *gain, uint8_t *rload);
 
+/**
+ * Sets the status of the lock register (LOCK) on the active sensor
+ *
+ * @param value
+ */
 void LMP91000_setLock(uint8_t value);
+
+/**
+ * Gets the status of the lock register (LOCK) from the active sensor.
+ *
+ * @param value
+ */
 void LMP91000_getLock(uint8_t *value);
 
+/**
+ * Gets the value of the STATUS register from the active sensor.
+ *
+ * @param value
+ */
 void LMP91000_getStatus(uint8_t *value);
 
-uint32_t LMP91000_getValue();
+/**
+ * Reads the current value from the active sensor's V_out line. This is a raw
+ * value obtained from the onboard ADC. Interpretation of the value depends on
+ * the reference voltage supplied to the LMP91000 which we do not have access
+ * to here. Reference voltage is controlled by the DAC.
+ *
+ * It's the caller's responsibility to have set the DAC properly, and know what
+ * the reference voltage is, so that you can properly interpret this value.
+ *
+ * @return
+ */
+uint32_t LMP91000_getRawValue();
+
+
+/**
+ * Reads the current value from the active sensor's V_out line and adjusts
+ * it to mV based on the 2.5V internal reference used by the ADC.
+ *
+ * @return
+ */
+uint32_t LMP91000_getValueMilliVolts();
 
 #endif
 

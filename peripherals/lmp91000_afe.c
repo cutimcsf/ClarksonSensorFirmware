@@ -14,6 +14,9 @@
 
 #include "lmp91000_afe.h"
 #include "adc.h"
+#include "dac.h"
+#include "battery.h"
+
 
 #include <app_assert.h>
 #include <em_i2c.h>
@@ -185,6 +188,12 @@ void LMP91000_getStatus(uint8_t *value) {
   *value = LMP91000_readData(LMP91000_STATUS_REG_ADDY);
 }
 
-uint32_t LMP91000_getValue() {
+uint32_t LMP91000_getRawValue() {
   return ADC_readPin(activeConfig->adcDataPin);
 }
+
+uint32_t LMP91000_getAdjustedValue() {
+  return LMP91000_getRawValue()*2500.0/0x1000u;
+
+}
+
