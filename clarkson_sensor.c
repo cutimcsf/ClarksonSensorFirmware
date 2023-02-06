@@ -46,7 +46,7 @@ handleUserWriteRequest (const sl_bt_evt_gatt_server_user_write_request_t * const
     case gattdb_device_configuration:
       dacValue = request->value.data[0] | (((uint16_t)request->value.data[1])<<8);
 
-      DAC_writeValue(parseValue(2, &(request->value.data[0])));
+      DAC_writeValue(dacValue);
       LMP91000_enableSensor(LMP91000_1);
       LMP91000_setTIACN_raw(request->value.data[2]);
       LMP91000_setRefCN_raw(request->value.data[3]);

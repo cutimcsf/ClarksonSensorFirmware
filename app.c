@@ -28,6 +28,7 @@
  *
  ******************************************************************************/
 #include "em_common.h"
+#include "em_system.h"
 #include "app_assert.h"
 #include "sl_bluetooth.h"
 #include "app.h"
@@ -36,6 +37,7 @@
 #include "peripherals/adc.h"
 #include "peripherals/lmp91000_afe.h"
 #include "clarkson_sensor.h"
+#include "gatt_db.h"
 
 // The advertising set handle allocated from Bluetooth stack.
 static uint8_t advertising_set_handle = 0xff;
@@ -82,11 +84,40 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 {
   sl_status_t sc;
 
+  uint64_t uniqueDevNum;
+  bd_addr  myAddy;
+  char     myDisplayName[26] = {0};
+
   switch (SL_BT_MSG_ID(evt->header)) {
     // -------------------------------
     // This event indicates the device has started and the radio is ready.
     // Do not call any stack command before receiving this boot event!
     case sl_bt_evt_system_boot_id:
+      uniqueDevNum = SYSTEM_GetUnique();
+
+      myAddy.addr[0] = (uint8_t)(uniqueDevNum>>56);
+      myAddy.addr[1] = (uint8_t)(uniqueDevNum>>48);
+      myAddy.addr[2] = (uint8_t)(uniqueDevNum>>40);
+      myAddy.addr[3] = (uint8_t)(uniqueDevNum>>16);
+      myAddy.addr[4] = (uint8_t)(uniqueDevNum>>8);
+      myAddy.addr[5] = (uint8_t)uniqueDevNum;
+
+      sprintf(&(myDisplayName[0]), "%s", "TinyBLEStat ");
+//      sprintf(&(myDisplayName[12]), "%02X", myAddy.addr[0]);
+//      sprintf(&(myDisplayName[14]), "%02X", myAddy.addr[1]);
+//      sprintf(&(myDisplayName[16]), "%02X", myAddy.addr[2]);
+//      sprintf(&(myDisplayName[18]), "%02X", myAddy.addr[3]);
+      sprintf(&(myDisplayName[12]), "%02X:", myAddy.addr[0]);
+      sprintf(&(myDisplayName[15]), "%02X", myAddy.addr[5]);
+
+
+
+      sl_status_t sc = sl_bt_gatt_server_write_attribute_value(
+          gattdb_device_name,
+          0,
+          strlen(myDisplayName),
+          (uint8_t*)myDisplayName);
+
       // Create an advertising set.
       sc = sl_bt_advertiser_create_set(&advertising_set_handle);
       app_assert_status(sc);
