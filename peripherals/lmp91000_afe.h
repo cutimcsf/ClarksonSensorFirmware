@@ -37,8 +37,8 @@
 #define OP_MODE_TEMP_MEAS_OFF                 0b110u
 
 #define GET_OPMODE_VALUE(short_en, mode)      ((short_en<<7) | mode)
-#define GET_OPMODE_MODE(value)                (value&0b111)
-#define GET_OPMODE_SHORT_EN(value)            ((value&0b1000000) >> 7)
+#define GET_OPMODE_MODE(value)                (value&0x3)
+#define GET_OPMODE_SHORT_EN(value)            ((value&0x80) >> 7)
 
 
 /******************************************************************************
@@ -124,6 +124,14 @@ void LMP91000_enableSensor(const LMP91000_Selector sel);
 /**
  * Sets the Mode Control Register (MODECN) on the active sensor
  *
+ * @param raw register value
+ */
+void LMP91000_setOpMode_raw(uint8_t raw);
+void LMP91000_getOpMode_raw(uint8_t *raw);
+
+/**
+ * Sets the Mode Control Register (MODECN) on the active sensor
+ *
  * @param fetShortEnabled
  * @param opMode
  */
@@ -137,6 +145,15 @@ void LMP91000_setOpMode(uint8_t fetShortEnabled, uint8_t opMode);
  * @param opMode
  */
 void LMP91000_getOpMode(uint8_t *fetShortEnabled, uint8_t *opMode);
+
+/**
+ * Sets the current value of the Reference Control Register (REFCN) on the
+ * active sensor.
+ *
+ * @param raw register value
+ */
+void LMP91000_setRefCN_raw(uint8_t raw);
+void LMP91000_getRefCN_raw(uint8_t *raw);
 
 /**
  * Sets the current value of the Reference Control Register (REFCN) on the
@@ -159,6 +176,15 @@ void LMP91000_setRefCN(uint8_t source, uint8_t intz, uint8_t sign, uint8_t bias)
  * @param bias
  */
 void LMP91000_getRefCN(uint8_t *source, uint8_t *intz, uint8_t *sign, uint8_t *bias);
+
+/**
+ * Sets the current value of the TIA Control Register (TIACN) on the
+ * active sensor.
+ *
+ * @param raw register value
+ */
+void LMP91000_setTIACN_raw(uint8_t raw);
+void LMP91000_getTIACN_raw(uint8_t *raw);
 
 /**
  * Sets the current value of the TIA Control Register (TIACN) on the

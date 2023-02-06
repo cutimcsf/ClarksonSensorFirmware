@@ -11,9 +11,11 @@
 
 
 #include "clarkson_sensor.h"
+#include "peripherals/lmp91000_afe.h"
 #include "peripherals/dac.h"
 #include "peripherals/battery.h"
 #include "gatt_db.h"
+
 
 #include <sl_bluetooth.h>
 
@@ -38,6 +40,18 @@ handleUserWriteRequest (const sl_bt_evt_gatt_server_user_write_request_t * const
       DAC_writeValue (parseValue (request->value.len, request->value.data));
       break;
 
+    case gattdb_device_configuration:
+      DAC_writeValue(parseValue(2, &(request->value.data[0])));
+      LMP91000_enableSensor(LMP91000_1);
+      LMP91000_setTIACN_raw(request->value.data[2]);
+      LMP91000_setRefCN_raw(request->value.data[3]);
+      LMP91000_setOpMode_raw(request->value.data[4]);
+      LMP91000_enableSensor(LMP91000_2);
+      LMP91000_setTIACN_raw(request->value.data[5]);
+      LMP91000_setRefCN_raw(request->value.data[6]);
+      LMP91000_setOpMode_raw(request->value.data[7]);
+      break;
+
     default:
       // Take no action, just let it pass through. There are system-level handlers
       // that the API will call next.
@@ -55,6 +69,10 @@ handleUserReadRequest (const sl_bt_evt_gatt_server_user_read_request_t * const r
   uint32_t millivolts = 0;
   bool handled = true;
 
+  uint8_t deviceConfigValue = 0;
+  uint8_t deviceConfig[8] = {0};
+
+
   switch (rsp->characteristic)
     {
     case gattdb_battery_level:
@@ -62,6 +80,30 @@ handleUserReadRequest (const sl_bt_evt_gatt_server_user_read_request_t * const r
       millivolts = Battery_getCurrentLevel ();
       sz = sizeof(millivolts);
       p = (uint8_t*) &millivolts;
+      break;
+
+    case gattdb_device_configuration:
+      deviceConfig[0] = DAC_getLastValueWritten() & 0x00FF;
+      deviceConfig[1] = (DAC_getLastValueWritten() & 0xFF00) >> 8;
+
+      LMP91000_enableSensor(LMP91000_1);
+      LMP91000_getTIACN_raw(&deviceConfigValue);
+      deviceConfig[2] = deviceConfigValue;
+      LMP91000_getRefCN_raw(&deviceConfigValue);
+      deviceConfig[3] = deviceConfigValue;
+      LMP91000_getOpMode_raw(&deviceConfigValue);
+      deviceConfig[4] = deviceConfigValue;
+
+      LMP91000_enableSensor(LMP91000_2);
+      LMP91000_getTIACN_raw(&deviceConfigValue);
+      deviceConfig[5] = deviceConfigValue;
+      LMP91000_getRefCN_raw(&deviceConfigValue);
+      deviceConfig[6] = deviceConfigValue;
+      LMP91000_getOpMode_raw(&deviceConfigValue);
+      deviceConfig[7] = deviceConfigValue;
+
+      sz = sizeof(deviceConfig);
+      p = deviceConfig;
       break;
 
     default:

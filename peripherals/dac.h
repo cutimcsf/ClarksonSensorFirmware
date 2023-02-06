@@ -40,6 +40,6 @@ void DAC_writeValue(const uint16_t value);
  *
  * @return
  */
-uint16_t getLastValueWritten();
+uint16_t DAC_getLastValueWritten();
 
 #endif

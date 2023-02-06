@@ -25,11 +25,6 @@
 // The LMP91000's I2C Address and internal register addresses as defined
 //  by the datasheet -- section 7.5.1 and 7.5.3
 #define LMP91000_I2C_ADDRESS                   0b10010000
-#define LMP91000_STATUS_REG_ADDY               0x00
-#define LMP91000_LOCK_REG_ADDY                 0x01
-#define LMP91000_TIACN_REG_ADDY                0x10
-#define LMP91000_REFCN_REG_ADDY                0x11
-#define LMP91000_MDOECN_REG_ADDY               0x12
 
 #define I2C_RXBUFFER_SIZE                 1
 #define I2C_TXBUFFER_SIZE                 2
@@ -141,15 +136,35 @@ uint8_t LMP91000_readData(const uint8_t registerAddy) {
   return i2c_rxBuffer[0];
 }
 
+void LMP91000_setOpMode_raw(uint8_t raw) {
+  LMP91000_setOpMode(
+      GET_OPMODE_SHORT_EN(raw),
+      GET_OPMODE_MODE(raw));
+}
+
 void LMP91000_setOpMode(uint8_t shortEnabled, uint8_t opMode) {
   uint8_t data = GET_OPMODE_VALUE(shortEnabled, opMode);
   LMP91000_sendData(LMP91000_MODECN_REG_ADDY, data);
 }
 
+void LMP91000_getOpMode_raw(uint8_t *raw) {
+  *raw = LMP91000_readData(LMP91000_MODECN_REG_ADDY);
+}
+
 void LMP91000_getOpMode(uint8_t *feShortEnabled, uint8_t *opMode) {
-  uint8_t data = LMP91000_readData(LMP91000_MODECN_REG_ADDY);
+  uint8_t data;
+
+  LMP91000_getOpMode_raw(&data);
   *feShortEnabled = GET_OPMODE_SHORT_EN(data);
   *opMode = GET_OPMODE_MODE(data);
+}
+
+void LMP91000_setRefCN_raw(uint8_t raw) {
+  LMP91000_setRefCN(
+      GET_REFCN_SOURCE(raw),
+      GET_REFCN_INT_Z(raw),
+      GET_REFCN_BIAS_SIGN(raw),
+      GET_REFCN_BIAS_MAGNITUDE(raw));
 }
 
 void LMP91000_setRefCN(uint8_t source, uint8_t intz, uint8_t sign, uint8_t bias) {
@@ -157,12 +172,22 @@ void LMP91000_setRefCN(uint8_t source, uint8_t intz, uint8_t sign, uint8_t bias)
   LMP91000_sendData(LMP91000_REFCN_REG_ADDY, data);
 }
 
+void LMP91000_getRefCN_raw(uint8_t *raw) {
+  *raw = LMP91000_readData(LMP91000_REFCN_REG_ADDY);
+}
+
 void LMP91000_getRefCN(uint8_t *source, uint8_t *intz, uint8_t *sign, uint8_t *bias) {
-  uint8_t data = LMP91000_readData(LMP91000_REFCN_REG_ADDY);
+  uint8_t data;
+
+  LMP91000_getRefCN_raw(&data);
   *source = GET_REFCN_SOURCE(data);
   *intz = GET_REFCN_INT_Z(data);
   *sign = GET_REFCN_BIAS_SIGN(data);
   *bias = GET_REFCN_BIAS_MAGNITUDE(data);
+}
+
+void LMP91000_setTIACN_raw(uint8_t raw) {
+  LMP91000_setTIACN(GET_TIA_GAIN(raw), GET_TIA_RLOAD(raw));
 }
 
 void LMP91000_setTIACN(uint8_t gain, uint8_t rload) {
@@ -170,8 +195,14 @@ void LMP91000_setTIACN(uint8_t gain, uint8_t rload) {
   LMP91000_sendData(LMP91000_TIACN_REG_ADDY, data);
 }
 
+void LMP91000_getTIACN_raw(uint8_t *raw) {
+  *raw  = LMP91000_readData(LMP91000_TIACN_REG_ADDY);
+}
+
 void LMP91000_getTIACN(uint8_t *gain, uint8_t *rload) {
-  uint8_t data = LMP91000_readData(LMP91000_TIACN_REG_ADDY);
+  uint8_t data;
+
+  LMP91000_getTIACN_raw(&data);
   *gain = GET_TIA_GAIN(data);
   *rload = GET_TIA_RLOAD(data);
 }

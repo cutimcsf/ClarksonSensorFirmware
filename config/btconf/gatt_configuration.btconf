@@ -96,5 +96,14 @@
         <write_no_response authenticated="false" bonded="false" encrypted="false"/>
       </properties>
     </characteristic>
+
+    <!--Device Configuration-->
+    <characteristic const="false" id="device_configuration" name="Device Configuration" sourceId="custom" uuid="959e4f6b-b245-4052-8b58-f0ed3d5329b9">
+      <value length="0" type="user" variable_length="false">00</value>
+      <properties>
+        <read authenticated="false" bonded="false" encrypted="false"/>
+        <write authenticated="false" bonded="false" encrypted="false"/>
+      </properties>
+    </characteristic>
   </service>
 </gatt>
