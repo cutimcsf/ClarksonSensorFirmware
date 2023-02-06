@@ -1,4 +1,5 @@
 IAR ARM - Debug/**
+.trash/**
 output_gbl/**
 .pdm/**
 GNU ARM v10.2.1 - Default/**
