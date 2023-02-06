@@ -8,8 +8,8 @@
  *
  *  Methods for interacting with the LMP91000 chips.
  *
- *  DataSheet:
- *    https://www.ti.com/lit/ds/symlink/lmp91000.pdf
+ *  DataSheet: *    https://www.ti.com/lit/ds/symlink/lmp91000.pdf
+
  ******************************************************************************/
 
 #include "lmp91000_afe.h"
@@ -67,7 +67,7 @@ void LMP91000_enableSensor(const LMP91000_Selector sel) {
 
 }
 
-/**
+/**https://github.com/cutimcsf/TinyBLEStat_MobileApp
  * Reference section 7.5.2 of the data sheet for an overview of what's happening
  * here ... write operations include:
  *    7-bit slave address
@@ -137,14 +137,13 @@ uint8_t LMP91000_readData(const uint8_t registerAddy) {
 }
 
 void LMP91000_setOpMode_raw(uint8_t raw) {
-  LMP91000_setOpMode(
-      GET_OPMODE_SHORT_EN(raw),
-      GET_OPMODE_MODE(raw));
+  LMP91000_sendData(LMP91000_MODECN_REG_ADDY, raw);
+
 }
 
 void LMP91000_setOpMode(uint8_t shortEnabled, uint8_t opMode) {
   uint8_t data = GET_OPMODE_VALUE(shortEnabled, opMode);
-  LMP91000_sendData(LMP91000_MODECN_REG_ADDY, data);
+  LMP91000_setOpMode_raw(data);
 }
 
 void LMP91000_getOpMode_raw(uint8_t *raw) {
@@ -160,16 +159,13 @@ void LMP91000_getOpMode(uint8_t *feShortEnabled, uint8_t *opMode) {
 }
 
 void LMP91000_setRefCN_raw(uint8_t raw) {
-  LMP91000_setRefCN(
-      GET_REFCN_SOURCE(raw),
-      GET_REFCN_INT_Z(raw),
-      GET_REFCN_BIAS_SIGN(raw),
-      GET_REFCN_BIAS_MAGNITUDE(raw));
+  LMP91000_sendData(LMP91000_REFCN_REG_ADDY, raw);
+
 }
 
 void LMP91000_setRefCN(uint8_t source, uint8_t intz, uint8_t sign, uint8_t bias) {
   uint8_t data = GET_REFCN_REG_VALUE(source, intz, sign, bias);
-  LMP91000_sendData(LMP91000_REFCN_REG_ADDY, data);
+  LMP91000_setRefCN_raw(data);
 }
 
 void LMP91000_getRefCN_raw(uint8_t *raw) {
@@ -187,7 +183,7 @@ void LMP91000_getRefCN(uint8_t *source, uint8_t *intz, uint8_t *sign, uint8_t *b
 }
 
 void LMP91000_setTIACN_raw(uint8_t raw) {
-  LMP91000_setTIACN(GET_TIA_GAIN(raw), GET_TIA_RLOAD(raw));
+  LMP91000_sendData(LMP91000_TIACN_REG_ADDY, raw);
 }
 
 void LMP91000_setTIACN(uint8_t gain, uint8_t rload) {
