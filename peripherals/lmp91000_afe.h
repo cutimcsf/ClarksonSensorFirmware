@@ -37,7 +37,7 @@
 #define OP_MODE_TEMP_MEAS_OFF                 0b110u
 
 #define GET_OPMODE_VALUE(short_en, mode)      ((short_en<<7) | mode)
-#define GET_OPMODE_MODE(value)                (value&0x3)
+#define GET_OPMODE_MODE(value)                (value&0x7)
 #define GET_OPMODE_SHORT_EN(value)            ((value&0x80) >> 7)
 
 

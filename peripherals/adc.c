@@ -41,8 +41,8 @@ ADC_InitSingle_TypeDef initSingleBattery  =   {                                 
  */
 ADC_InitSingle_TypeDef initSinglePin =   {                                   \
     0,                       /* PRS is not used - ignore this value */            \
-    adcAcqTime32,            /* 256 ADC_CLK cycle acquisition time. */            \
-    adcRef2V5,               /* 2.50 V internal reference. */                     \
+    adcAcqTime4,            /* 256 ADC_CLK cycle acquisition time. */            \
+    adcRefVDD,                                                                    \
     adcRes12Bit,             /* Oversampling enabled resolution. */               \
     0,
     0,
@@ -88,7 +88,7 @@ int32_t ADC_read(const ADC_InitSingle_TypeDef *init) {
   return raw;
 }
 
-int32_t ADC_readPin(uint32_t pin) {
+int32_t ADC_readPin(ADC_PosSel_TypeDef pin) {
   initSinglePin.posSel = pin;
   return ADC_read(&initSinglePin);
 }

@@ -13,7 +13,7 @@
 #ifndef ADC_H__
 #define ADC_H__
 
-#include "em_adc.h"
+#include <em_adc.h>
 
 
 /******************************************************************************
@@ -23,10 +23,10 @@
 #define ADC_BAT_POS_SEL			adcPosSelAPORT4XCH29		/* PB13							*/
 #define ADC_BAT_NEG_SEL			adcNegSelAPORT2YCH10		/* PC10							*/
 #define LMP91000_1_DATA_PIN  adcPosSelAPORT4XCH13    /* PA5 */
-#define LMP91000_2_DATA_PIN  adcPosSelAPORT4XCH11    /* PA5 */
+#define LMP91000_2_DATA_PIN  adcPosSelAPORT4XCH11    /* PA3 */
 
 #define ADC_CLOCK           16000000                /* ADC conversion clock     */
-
+#define ADC_12BIT_MAX_VAL   0x1000u
 
 /******************************************************************************
  * ADC_initialize() - call once at boot.
@@ -46,7 +46,7 @@ int32_t ADC_readPowerMonitor();
  * Reads the ADC to determine voltage across ADC_BAT_POS_SEL and ADC_BAT_NEG_SEL
  * pins.
  *****************************************************************************/
-int32_t ADC_readPin(uint32_t pin);
+int32_t ADC_readPin(ADC_PosSel_TypeDef pin);
 
 /******************************************************************************
  * ADC_reset()

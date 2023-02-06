@@ -34,6 +34,9 @@ parseValue (const uint8_t len, const uint8_t bytes[])
 void
 handleUserWriteRequest (const sl_bt_evt_gatt_server_user_write_request_t * const request)
 {
+  uint8_t respond = 0;
+  uint16_t dacValue = 0;
+
   switch (request->characteristic)
     {
     case gattdb_write_to_dac:
@@ -41,6 +44,8 @@ handleUserWriteRequest (const sl_bt_evt_gatt_server_user_write_request_t * const
       break;
 
     case gattdb_device_configuration:
+      dacValue = request->value.data[0] | (((uint16_t)request->value.data[1])<<8);
+
       DAC_writeValue(parseValue(2, &(request->value.data[0])));
       LMP91000_enableSensor(LMP91000_1);
       LMP91000_setTIACN_raw(request->value.data[2]);
@@ -50,6 +55,7 @@ handleUserWriteRequest (const sl_bt_evt_gatt_server_user_write_request_t * const
       LMP91000_setTIACN_raw(request->value.data[5]);
       LMP91000_setRefCN_raw(request->value.data[6]);
       LMP91000_setOpMode_raw(request->value.data[7]);
+      respond = 1;
       break;
 
     default:
@@ -57,6 +63,15 @@ handleUserWriteRequest (const sl_bt_evt_gatt_server_user_write_request_t * const
       // that the API will call next.
       break;
     }
+
+  if ( respond ) {
+      sl_bt_gatt_server_send_user_write_response(
+          request->connection,
+          request->characteristic,
+          0
+      );
+
+  }
 }
 
 void
@@ -72,6 +87,10 @@ handleUserReadRequest (const sl_bt_evt_gatt_server_user_read_request_t * const r
   uint8_t deviceConfigValue = 0;
   uint8_t deviceConfig[8] = {0};
 
+  union SensorValues {
+    uint32_t sensorReading[2];
+    uint8_t  raw[8];
+  } sensorValues;
 
   switch (rsp->characteristic)
     {
@@ -104,6 +123,18 @@ handleUserReadRequest (const sl_bt_evt_gatt_server_user_read_request_t * const r
 
       sz = sizeof(deviceConfig);
       p = deviceConfig;
+      break;
+
+    case gattdb_sensor_value:
+      LMP91000_enableSensor(LMP91000_1);
+      sensorValues.sensorReading[0] = LMP91000_getValueMilliVolts();
+
+      LMP91000_enableSensor(LMP91000_2);
+      sensorValues.sensorReading[1] = LMP91000_getValueMilliVolts();
+
+      sz = sizeof(sensorValues);
+      p = sensorValues.raw;
+
       break;
 
     default:

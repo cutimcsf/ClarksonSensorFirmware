@@ -11,6 +11,7 @@
 
 #include "i2c_lmp_config.h"
 #include "../adc.h"
+#include <em_adc.h>
 
 sl_i2cspm_t *i2c_lmp1 = I2C_LMP1_PERIPHERAL;
 sl_i2cspm_t *i2c_lmp2 = I2C_LMP2_PERIPHERAL;

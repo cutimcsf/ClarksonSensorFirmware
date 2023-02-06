@@ -20,7 +20,7 @@
 
 #include <app_assert.h>
 #include <em_i2c.h>
-
+#include "tinyblestat.h"
 
 // The LMP91000's I2C Address and internal register addresses as defined
 //  by the datasheet -- section 7.5.1 and 7.5.3
@@ -59,7 +59,7 @@ void LMP91000_enableSensor(const LMP91000_Selector sel) {
 
 
   GPIO_PinModeSet(activeConfig->enlow_port, activeConfig->enlow_pin, gpioModeInputPull, 0);
-  GPIO_PinModeSet(disableConfig->enlow_port, disableConfig->enlow_pin, gpioModeInputPull, 0);
+  GPIO_PinModeSet(disableConfig->enlow_port, disableConfig->enlow_pin, gpioModeInputPull, 1);
 
   // This wouldn't be needed if I put them on the same i2c bus but I wasn't
   // paying attention ;).
@@ -223,8 +223,28 @@ uint32_t LMP91000_getRawValue() {
   return ADC_readPin(activeConfig->adcDataPin);
 }
 
-uint32_t LMP91000_getAdjustedValue() {
-  return LMP91000_getRawValue()*2500.0/0x1000u;
+uint32_t LMP91000_getValueMilliVolts() {
+  float reference = 0.00f;
+
+  uint8_t a, b, c, d;
+  LMP91000_getOpMode(&a, &b);
+  if ( b == 0x03 ) reference = SYSTEM_VDD;    // Temp Sensor seems to run off Vdd.
+  else {
+      LMP91000_getRefCN(&a,  &b,  &c,  &d);
+      if (a == 0) {
+          reference = SYSTEM_VDD;     // Vdd is about 3.350V
+      }
+      else {
+          // Reference is controlled by the DAC. It's a percentage of VDD
+          reference = 3350.0f * DAC_getLastValueWritten() / DAC_MAX_VALUE;
+
+          /**
+           * TODO :: Figure out if and how bias, gain, and int_z affect this?
+           */
+      }
+  }
+
+  return LMP91000_getRawValue()*reference/ADC_12BIT_MAX_VAL;
 
 }
 

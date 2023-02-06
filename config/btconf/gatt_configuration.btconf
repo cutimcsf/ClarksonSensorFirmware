@@ -105,5 +105,13 @@
         <write authenticated="false" bonded="false" encrypted="false"/>
       </properties>
     </characteristic>
+
+    <!--Sensor Value-->
+    <characteristic const="false" id="sensor_value" name="Sensor Value" sourceId="custom" uuid="07c0afa9-cf35-4f96-a27d-dbdcb6d6b08b">
+      <value length="0" type="user" variable_length="false">00</value>
+      <properties>
+        <read authenticated="false" bonded="false" encrypted="false"/>
+      </properties>
+    </characteristic>
   </service>
 </gatt>
