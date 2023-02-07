@@ -3,8 +3,10 @@
 Based on the Bluetooth SoC-Empty example project. To work with this project, be sure you have the following installed:
 
 1) Simplicity Studio v5 (https://www.silabs.com/developers/simplicity-studio)
-2) Gecko SDK 4.2.0
-3) GCC Toolchain 10.2.1
+2) Gecko SDK 4.2.1 (will be installed by Simplicity Studio)
+3) GCC Toolchain 10.2.1 (will be installed by Simplicity Studio)
+
+After you have SS5 installed and configured, and have cloned this repository, you will want to import the project into your workspace using the Simplicity Studio -> 
 
 Contact Tim (tfanelli@clarkson.edu) if you need help getting set up. 
 
