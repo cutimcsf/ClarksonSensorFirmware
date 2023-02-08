@@ -83,10 +83,10 @@ SPIDRV_Init_t sl_spidrv_usart_init_spi_dac = {
 };
 
 void sl_spidrv_init_instances(void) {
-#if !defined(SL_SPIDRV_EUSART_SPI_ACCEL_CS_PIN)
+#if !defined(SL_SPIDRV_USART_SPI_ACCEL_CS_PIN)
   EFM_ASSERT(sl_spidrv_usart_init_spi_accel.csControl == spidrvCsControlAuto);
 #endif
-#if !defined(SL_SPIDRV_EUSART_SPI_DAC_CS_PIN)
+#if !defined(SL_SPIDRV_USART_SPI_DAC_CS_PIN)
   EFM_ASSERT(sl_spidrv_usart_init_spi_dac.csControl == spidrvCsControlAuto);
 #endif
   SPIDRV_Init(sl_spidrv_usart_spi_accel_handle, &sl_spidrv_usart_init_spi_accel);
