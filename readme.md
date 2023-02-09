@@ -3,8 +3,12 @@
 Based on the Bluetooth SoC-Empty example project. To work with this project, be sure you have the following installed:
 
 1) Simplicity Studio v5 (https://www.silabs.com/developers/simplicity-studio)
-2) Gecko SDK 4.2.0
-3) GCC Toolchain 10.2.1
+2) Gecko SDK 4.2.1 (will be installed by Simplicity Studio)
+3) GCC Toolchain 10.2.1 (will be installed by Simplicity Studio)
+
+After you have SS5 installed and configured, and have cloned this repository, follow this quick start video to get up and running:
+
+https://user-images.githubusercontent.com/109687210/217398887-a58f11c5-5ada-4056-a858-bb9f2a980c41.mp4
 
 Contact Tim (tfanelli@clarkson.edu) if you need help getting set up. 
 
@@ -40,3 +44,7 @@ To learn how to use the GATT Configurator, see [UG438: GATT Configurator User’
 ## Report Bugs & Get Support
 
 You are always encouraged and welcome to report any issues you found to us via [Silicon Labs Community](https://www.silabs.com/community).
+
+
+
+
