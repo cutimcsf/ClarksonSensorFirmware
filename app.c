@@ -54,8 +54,12 @@ SL_WEAK void app_init(void)
   uint8_t value;
   ADC_initialize();
 
-  DAC_writeValue(0xffff);
   LMP91000_enableSensor(LMP91000_1);
+  LMP91000_setOpMode(OP_FET_SHORT_DISABLED, OP_MODE_TEMP_MEAS_ON);
+  LMP91000_getValueMilliVolts();
+
+  DAC_writeValue(0xffff);
+
 //  LMP91000_getStatus(&value);
 //  if (value) {
 //      LMP91000_setOpMode(OP_FET_SHORT_DISABLED, OP_MODE_TEMP_MEAS_ON);

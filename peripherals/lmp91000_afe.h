@@ -236,7 +236,7 @@ void LMP91000_getStatus(uint8_t *value);
  *
  * @return
  */
-uint32_t LMP91000_getRawValue();
+uint16_t LMP91000_getRawValue();
 
 
 /**

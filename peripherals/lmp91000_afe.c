@@ -215,7 +215,7 @@ void LMP91000_getStatus(uint8_t *value) {
   *value = LMP91000_readData(LMP91000_STATUS_REG_ADDY);
 }
 
-uint32_t LMP91000_getRawValue() {
+uint16_t LMP91000_getRawValue() {
   return ADC_readPin(activeConfig->adcDataPin);
 }
 
@@ -232,7 +232,7 @@ uint32_t LMP91000_getValueMilliVolts() {
       }
       else {
           // Reference is controlled by the DAC. It's a percentage of VDD
-          reference = 3350.0f * DAC_getLastValueWritten() / DAC_MAX_VALUE;
+          reference = SYSTEM_VDD * DAC_getLastValueWritten() / DAC_MAX_VALUE;
 
           /**
            * TODO :: Figure out if and how bias, gain, and int_z affect this?
@@ -240,7 +240,9 @@ uint32_t LMP91000_getValueMilliVolts() {
       }
   }
 
-  return LMP91000_getRawValue()*reference/ADC_12BIT_MAX_VAL;
+  int16_t rawVal = LMP91000_getRawValue();
+  int32_t millis = rawVal*2500/ADC_12BIT_MAX_VAL;
+  return millis;
 
 }
 

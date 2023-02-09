@@ -46,7 +46,7 @@ int32_t ADC_readPowerMonitor();
  * Reads the ADC to determine voltage across ADC_BAT_POS_SEL and ADC_BAT_NEG_SEL
  * pins.
  *****************************************************************************/
-int32_t ADC_readPin(ADC_PosSel_TypeDef pin);
+int16_t ADC_readPin(ADC_PosSel_TypeDef pin);
 
 /******************************************************************************
  * ADC_reset()
