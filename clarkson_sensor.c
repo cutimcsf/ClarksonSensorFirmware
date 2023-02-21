@@ -12,6 +12,7 @@
 
 #include "clarkson_sensor.h"
 #include "peripherals/lmp91000_afe.h"
+#include "peripherals/imu.h"
 #include "peripherals/dac.h"
 #include "peripherals/battery.h"
 #include "gatt_db.h"
@@ -88,8 +89,8 @@ handleUserReadRequest (const sl_bt_evt_gatt_server_user_read_request_t * const r
   uint8_t deviceConfig[8] = {0};
 
   union SensorValues {
-    uint32_t sensorReading[2];
-    uint8_t  raw[8];
+    SensorData data;
+    uint8_t  raw[sizeof(SensorData)];
   } sensorValues;
 
   switch (rsp->characteristic)
@@ -127,10 +128,16 @@ handleUserReadRequest (const sl_bt_evt_gatt_server_user_read_request_t * const r
 
     case gattdb_sensor_value:
       LMP91000_enableSensor(LMP91000_1);
-      sensorValues.sensorReading[0] = LMP91000_getValueMilliVolts();
+      sensorValues.data.lmp91000_data[0] = LMP91000_getValueMilliVolts();
 
       LMP91000_enableSensor(LMP91000_2);
-      sensorValues.sensorReading[1] = LMP91000_getValueMilliVolts();
+      sensorValues.data.lmp91000_data[1] = LMP91000_getValueMilliVolts();
+
+      IMU_refreshValues();
+      IMU_getCurrentValues(
+          &(sensorValues.data.imu_xdata),
+          &(sensorValues.data.imu_ydata),
+          &(sensorValues.data.imu_zdata));
 
       sz = sizeof(sensorValues);
       p = sensorValues.raw;

@@ -15,6 +15,12 @@
 
 #include <sl_bt_api.h>
 
+typedef struct _sensorData {
+  uint32_t lmp91000_data[2];
+  int16_t imu_xdata;
+  int16_t imu_ydata;
+  int16_t imu_zdata;
+} SensorData;
 
 /******************************************************************************
  * Handles GATT User Write Requests

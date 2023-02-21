@@ -34,6 +34,7 @@
 #include "app.h"
 
 #include "peripherals/dac.h"
+#include "peripherals/imu.h"
 #include "peripherals/adc.h"
 #include "peripherals/lmp91000_afe.h"
 #include "clarkson_sensor.h"
@@ -51,8 +52,8 @@ SL_WEAK void app_init(void)
   // Put your additional application init code here!                         //
   // This is called once during start-up.                                    //
   /////////////////////////////////////////////////////////////////////////////
-  uint8_t value;
   ADC_initialize();
+  IMU_initialize();
 
   LMP91000_enableSensor(LMP91000_1);
   LMP91000_setOpMode(OP_FET_SHORT_DISABLED, OP_MODE_TEMP_MEAS_ON);
@@ -86,8 +87,6 @@ SL_WEAK void app_process_action(void)
  *****************************************************************************/
 void sl_bt_on_event(sl_bt_msg_t *evt)
 {
-  sl_status_t sc;
-
   uint64_t uniqueDevNum;
   bd_addr  myAddy;
   char     myDisplayName[26] = {0};
