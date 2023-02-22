@@ -109,7 +109,9 @@ void IMU_initialize() {
   writeToRegister(IMU_REGISTER_FIFO_CONTROL, FIFO_MODE);
 
   const uint8_t MEASURE_MODE = 0x02;
-  writeToRegister(IMU_REGISTER_STATUS, MEASURE_MODE);
+  writeToRegister(IMU_REGISTER_POWER_CONTROL, MEASURE_MODE);
+
+
 }
 
 void IMU_refreshValues() {
